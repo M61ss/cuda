@@ -18,7 +18,7 @@
 
 ## Windows + NSight CLI
 
-1. If not installed, download and install NSight System (its stable version should be bundled with CUDA Toolkit). To check if it is installed, look at `"C:\Program Files\NVIDIA Corporation\"`;
+1. If not installed, download and install NSight System (it should be bundled with CUDA Toolkit). To check if it is installed, search "NSight Systems" folder in `"C:\Program Files\NVIDIA Corporation\"`;
 2. Add nsys.exe to the path (for instance its path could be `"C:\Program Files\NVIDIA Corporation\Nsight Systems 2025.5.1\target-windows-x64\"`);
 3. Profile your program in an ADMINISTRATOR PowerShell session:
    ```powershell
