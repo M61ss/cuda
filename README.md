@@ -2,10 +2,9 @@
 
 ## Windows + VSCode
 
-1. Download and install Visual Studio;
-2. Download and install CUDA Toolkit for Windows from official website;
-3. Download and install NSight Visual Studio Code Edition from VSCode Marketplace;
-4. Run program from PowerShell using:
+1. Download and install CUDA Toolkit for Windows from official website;
+2. Download and install NSight Visual Studio Code Edition from VSCode Marketplace;
+3. Run program from PowerShell using:
    ```powershell
    nvcc your_program.cu -o your_program.exe -ccbin path\to\cl.exe
    ```
