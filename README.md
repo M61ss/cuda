@@ -8,7 +8,7 @@
    ```powershell
    nvcc your_program.cu -o your_program.exe -ccbin path\to\cl.exe
    ```
-   For Visual Studio 2022 the path to cl.exe is: `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\bin\Hostx64\x64"`.
+   For Visual Studio 2022 Enterprise the path to cl.exe is: `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\bin\Hostx64\x64"`.
    
 > [!TIP]
 >
