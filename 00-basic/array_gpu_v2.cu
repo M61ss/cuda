@@ -26,8 +26,9 @@ int main() {
     }
 
     // Run kernel on 1M elements on device
-    add<<<1, 256>>>(N, x, y);           // 1 is number of blocks
-                                        // 256 is the number of threads, which must be multiple of 32
+    int blockSize = 256;          // It must be multiple of 32
+    int numBlocks = 1;
+    add<<<numBlocks, blockSize>>>(N, x, y);
 
     // Wait for GPU to finish before to accessing processed elements on host
     cudaDeviceSynchronize();

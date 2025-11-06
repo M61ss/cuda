@@ -24,7 +24,9 @@ int main() {
     }
 
     // Run kernel on 1M elements on device
-    add<<<1, 1>>>(N, x, y);
+    int blockSize = 1;
+    int numBlocks = 1;
+    add<<<numBlocks, blockSize>>>(N, x, y);
 
     // Wait for GPU to finish before to accessing processed elements on host
     cudaDeviceSynchronize();
