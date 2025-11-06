@@ -1,4 +1,4 @@
-# Kernel function, threads and blocks
+# Kernel function, threads, blocks
 
 CUDA GPUs have many parallel processors grouped into Streaming Multiprocessors (SMs). Each SM can run multiple concurrent thread blocks, but each **thread block** runs on a single SM. At the same way, each thread block can run multiple **thread**, but each thread runs on a single block. 
 \
@@ -22,4 +22,16 @@ void add(int n, float *x, float *y) {
 
 The loop shown in the example code runs only on the data subset assigned to this thread and takes step proportional to the block dimension.
 
+## Grid
+
 Together, the blocks of parallel threads make up what is known as the **grid**.
+
+> [!IMPORTANT]
+> 
+> If I have N elements to process, and a certain amount of threads per block (blockSize), in order to get the maximum possible parallelization, I just need to calculate the number of blocks such as to get one thread per element, so at least N threads. 
+> \
+> This can be implemented simply dividing N by the block size (being careful to round up in case N is not a multiple of blockSize).
+> ```c++
+> int blockSize = 256;
+> int numBlocks = (N + blockSize - 1) / blockSize;
+> ```
