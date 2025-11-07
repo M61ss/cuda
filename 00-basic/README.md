@@ -20,11 +20,7 @@ void add(int n, float *x, float *y) {
 }
 ```
 
-The loop shown in the example code runs only on the data subset assigned to this thread and takes step proportional to the block dimension.
-
-## Grid
-
-Together, the blocks of parallel threads make up what is known as the **grid**.
+The loop shown in the example code runs only on the data subset assigned to this thread and takes step proportional to the block dimension in order to not overlap its computation with other thread of the block (see image and formula below).
 
 > [!IMPORTANT]
 > 
@@ -35,3 +31,21 @@ Together, the blocks of parallel threads make up what is known as the **grid**.
 > int blockSize = 256;
 > int numBlocks = (N + blockSize - 1) / blockSize;
 > ```
+>
+> This choice in many cases is the best, but sometimes the scheduling task to assign every single element of vectors to a thread can generate a not negligible overhead. 
+
+Together, the blocks of parallel threads make up what is known as the **grid**.
+
+![grid](../resources/grid.png)
+
+Assigning one element per thread, the index of the element processed by the thread is computed as:
+
+$$
+index=blockIdx.x*blockDim.x+threadaIdx.x
+$$
+
+# Unified Memory Prefetching
+
+Unified Memory in CUDA is virtual memory. Individual virtual memory pages may be resident in the memory of any device (GPU or CPU) in the system, and those pages are migrated on demand. Since the memory pages are all CPU-resident when the kernel runs, there are multiple page faults and the hardware migrates the pages to the GPU memory when the faults occur. This results in a memory bottleneck, which is why we don’t see a speedup.
+\
+The migration is expensive because page faults occur individually, and GPU threads stall while they wait for the page migration. If we know what memory is needed by the kernel (x and y arrays), we can use prefetching to make sure that the data is on the GPU before the kernel needs it. We can do this by using the `cudaMemPrefetchAsync()` function before launching the kernel.
