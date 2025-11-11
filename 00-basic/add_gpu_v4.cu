@@ -22,13 +22,13 @@ int main() {
     cudaMallocManaged(&x, N * sizeof(float));
     cudaMallocManaged(&y, N * sizeof(float));
 
-    // Inizialize x and y (on the device)
+    // Inizialize x and y (on the device!)
     for (int i = 0; i < N; i++) {
         x[i] = 1.0f;
         y[i] = 2.0f;
     }
 
-    // Prefetch x and y arrays to the GPU
+    // Prefetch x and y arrays
     cudaMemLocation loc;
     loc.type = cudaMemLocationTypeDevice;               // Setting the type of memory location as device
     loc.id = 0;                                         // Selecting device 0
@@ -40,7 +40,7 @@ int main() {
     int numBlocks = (N + blockSize - 1) / blockSize;
     add<<<numBlocks, blockSize>>>(N, x, y);
 
-    // Wait for GPU to finish before to accessing processed elements on host
+    // Wait for the device to finish to elaborate data before accessing them from host process
     cudaDeviceSynchronize();
 
     // Check maximum error in calculations (all values of y should be 1.0 + 2.0 = 3.0)
@@ -50,7 +50,7 @@ int main() {
     }
     std::cout << "Max error: " << maxError << std::endl;
 
-    // Free memory
+    // Free device memory
     cudaFree(x);
     cudaFree(y);
 
