@@ -14,3 +14,19 @@ The reason shared memory is used in the static shared memory example is to facil
 
 ## Dynamic shared memory
 
+The dynamic shared memory kernel, `dynamicReverse()`, declares the shared memory array using an unsized extern array syntax, `extern __shared__ int s[]` (note the empty brackets and use of the extern specifier). The size is implicitly determined from the third execution configuration parameter when the kernel is launched. The remainder of the kernel code is identical to the `staticReverse()` kernel.
+
+What if you need multiple dynamically sized arrays in a single kernel? You must declare a single extern unsized array as before, and use pointers into it to divide it into multiple arrays, as in the following excerpt:
+
+```c++
+extern __shared__ int s[];
+int *integerData = s;                           // nI ints
+float *floatData = (float*)&integerData[nI];    // nF floats
+char *charData = (char*)&floatData[nF];         // nC chars
+```
+
+In the kernel launch, specify the total shared memory needed, as in the following:
+
+```c++
+myKernel<<<gridSize, blockSize, nI * sizeof(int) + nF * sizeof(float) + nC * sizeof(char)>>>(...);
+```
