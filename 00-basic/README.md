@@ -44,6 +44,14 @@ $$
 index=blockIdx.x*blockDim.x+threadaIdx.x
 $$
 
+It is also possible to specify the number of grids using the following syntax:
+
+```c++
+myKernel<<<gridNumber, blockNumber, threadNumber>>>(...)
+```
+
+Notice that `blockNumber` refers to number of blocks per grid, as well as `threadNumber` the number of threads per block.
+
 # Unified Memory Prefetching
 
 Unified Memory in CUDA is virtual memory. Individual virtual memory pages may be resident in the memory of any device (GPU or CPU) in the system, and those pages are migrated on demand. Since the memory pages are all CPU-resident when the kernel runs, there are multiple page faults and the hardware migrates the pages to the GPU memory when the faults occur. This results in a memory bottleneck, which is why we don’t see a speedup.
