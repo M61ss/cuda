@@ -1,21 +1,24 @@
 #include <iostream>
 
 __global__ void staticReverse(int *d, int n) {
+    // Declaring an array using static shared memory
     __shared__ int s[64];
     int t = threadIdx.x;
-    int tr = n - t - 1;
+    int t_reverse = n - t - 1;
     s[t] = d[t];
+    // We need to sync threads because before to use data stored in s, the whole array has to be filled
     __syncthreads();
-    d[t] = s[tr];
+    d[t] = s[t_reverse];
 }
 
 __global__ void dynamicReverse(int *d, int n) {
+    // Declaring an array using dynamic shared memory
     extern __shared__ int s[];
     int t = threadIdx.x;
-    int tr = n - t - 1;
+    int t_reverse = n - t - 1;
     s[t] = d[t];
     __syncthreads();
-    d[t] = s[tr];
+    d[t] = s[t_reverse];
 }
 
 int main(void) {
@@ -44,7 +47,7 @@ int main(void) {
 
     // Using dynamic shared memory
     cudaMemcpy(buffer_device, a, n * sizeof(int), cudaMemcpyHostToDevice);
-    dynamicReverse<<<1, n>>>(buffer_device, n);
+    dynamicReverse<<<1, n, n * sizeof(int)>>>(buffer_device, n);
     cudaMemcpy(dst, buffer_device, n * sizeof(int), cudaMemcpyDeviceToHost);
     for (int i = 0; i < n; i++) {
         if (dst[i] != result[i]) {
