@@ -6,7 +6,7 @@ int main(void) {
 
     double sum = 0.0;
     for (int i = 0; i < N; i++) {
-        sum += rand();
+        sum += rand() % 101;
     }
     double approx = sum / N;
 
