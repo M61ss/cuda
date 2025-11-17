@@ -16,7 +16,9 @@ int main() {
     // This means that nothing is stored (neither allocated) in the host main memory.
     // !!! The GPU needs to have data on its memory, otherwise it will throw segmentation fault !!! 
     float *x, *y;
-    cudaMallocManaged(&x, N * sizeof(float));
+    cudaMallocManaged(&x, N * sizeof(float));       // Memory is managed so that there is no need to move data
+                                                    // to host memory if it wants to access them. It is possible
+                                                    // thanks to Unified Memory System
     cudaMallocManaged(&y, N * sizeof(float));
 
     // Inizialize x and y on the device (GPU)
