@@ -16,8 +16,7 @@ int main() {
     int N = 1 << 20;    // It shifts 1 to left 20 times => N = 2^20 = 1048576 
                         // (faster than using a function which computes the power)
 
-    // Create two arrays of ~1M elements directly on the device (GPU). 
-    // This means that nothing is stored (neither allocated) in the host main memory
+    // Create two arrays of ~1M elements on the device
     float *x, *y;
     cudaMallocManaged(&x, N * sizeof(float));
     cudaMallocManaged(&y, N * sizeof(float));
