@@ -36,7 +36,7 @@ int main(void)
     cudaDeviceSynchronize();
     end = std::chrono::high_resolution_clock::now();
     auto et_gpu = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-    std::cout << "Elapsed time CPU: " << et_gpu.count() << "ms" << std::endl;
+    std::cout << "Elapsed time GPU: " << et_gpu.count() << "ms" << std::endl;
 
     return 0;
 }
