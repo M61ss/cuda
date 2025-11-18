@@ -10,7 +10,7 @@
         CPU (i7-10700k): 2.3ms~2.4ms
 */
 
-__global__ void add(double *gpu_sum, double *samples)
+__global__ void add(float *gpu_sum, float *samples)
 {
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     *gpu_sum += samples[index];
@@ -19,9 +19,9 @@ __global__ void add(double *gpu_sum, double *samples)
 int main(void)
 {
     const int N = 1 << 20;
-    double cpu_sum = 0;
-    double *samples;
-    cudaMallocManaged(&samples, N * sizeof(double));
+    float cpu_sum = 0;
+    float *samples;
+    cudaMallocManaged(&samples, N * sizeof(float));
     for (int i = 0; i < N; i++)
     {
         samples[i] = rand() % 101;
@@ -29,15 +29,14 @@ int main(void)
 
     int numThreads = 256;
     int numBlocks = (N + numThreads - 1) / numThreads;
-    int numGrids = 1;
-    double *gpu_sum;
-    cudaMallocManaged(&gpu_sum, sizeof(double));
+    float *gpu_sum;
+    cudaMallocManaged(&gpu_sum, sizeof(float));
     *gpu_sum = 0;
     cudaMemLocation loc;
     loc.id = 0;
     loc.type = cudaMemLocationTypeDevice;
-    cudaMemPrefetchAsync(samples, N * sizeof(double), loc, 0);
-    cudaMemPrefetchAsync(gpu_sum, sizeof(double), loc, 0);
+    cudaMemPrefetchAsync(samples, N * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(gpu_sum, sizeof(float), loc, 0);
     
     auto begin = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < N; i++)
@@ -50,7 +49,7 @@ int main(void)
     std::cout << "Elapsed time CPU: " << (float)et_cpu.count() / 1000 << "ms" << std::endl;
 
     begin = std::chrono::high_resolution_clock::now();
-    add<<<numGrids, numBlocks, numThreads>>>(gpu_sum, samples);
+    add<<<numBlocks, numThreads>>>(gpu_sum, samples);
     cudaDeviceSynchronize();
     end = std::chrono::high_resolution_clock::now();
     auto et_gpu = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
