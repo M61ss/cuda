@@ -6,13 +6,13 @@
     Demonstraits how shared memory bank conflicts lead GPU to have lower performance than CPU.
     Prefetch improves sightly performance. 
     Performance oscillates more on GPU than on CPU: 
-        GPU: 3ms~2ms 
-        CPU: 2.3ms~2.4ms
+        GPU (RTX 3060): 3ms~2ms 
+        CPU (i7-10700k): 2.3ms~2.4ms
 */
 
 __global__ void add(double *gpu_sum, double *samples)
 {
-    int index = gridDim.x * blockDim.x + threadIdx.x;
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
     *gpu_sum += samples[index];
 }
 
