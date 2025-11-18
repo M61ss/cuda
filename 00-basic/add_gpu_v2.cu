@@ -1,32 +1,35 @@
 #include <iostream>
 #include <math.h>
 
-__global__
-void add(int n, float *x, float *y) {
-    int index = threadIdx.x;    // Index of the current thread
-    int stride = blockDim.x;    // Number of threads for every block
-    
-    for (int i = index; i < n; i += stride) {
+__global__ void add(int n, float *x, float *y)
+{
+    int index = threadIdx.x; // Index of the current thread
+    int stride = blockDim.x; // Number of threads for every block
+
+    for (int i = index; i < n; i += stride)
+    {
         y[i] = x[i] + y[i];
     }
 }
 
-int main() {
-    int N = 1 << 20;      // It shifts 1 to left 20 times => N = 2^20 = 1048576 (faster than using a function which computes the power)
+int main()
+{
+    int N = 1 << 20; // It shifts 1 to left 20 times => N = 2^20 = 1048576 (faster than using a function which computes the power)
 
-    // Create two arrays of ~1M elements on the device
+    // Create two arrays of ~1M elements
     float *x, *y;
     cudaMallocManaged(&x, N * sizeof(float));
     cudaMallocManaged(&y, N * sizeof(float));
 
-    // Inizialize x and y on the device (GPU)
-    for (int i = 0; i < N; i++) {
+    // Inizialize x and y
+    for (int i = 0; i < N; i++)
+    {
         x[i] = 1.0f;
         y[i] = 2.0f;
     }
 
     // Run kernel on 1M elements on device
-    int blockSize = 256;          // It must be multiple of 32
+    int blockSize = 256; // It must be multiple of 32
     int numBlocks = 1;
     add<<<numBlocks, blockSize>>>(N, x, y);
 
@@ -35,7 +38,8 @@ int main() {
 
     // Check maximum error in calculations (all values of y should be 1.0 + 2.0 = 3.0)
     float maxError = 0.0f;
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++)
+    {
         maxError = fmax(maxError, fabs(y[i] - 3.0f));
     }
     std::cout << "Max error: " << maxError << std::endl;

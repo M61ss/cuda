@@ -2,27 +2,30 @@
 #include <math.h>
 
 // Kernel function
-__global__
-void add(int n, float *x, float *y) {
-    for (int i = 0; i < n; i++) {
+__global__ void add(int n, float *x, float *y)
+{
+    for (int i = 0; i < n; i++)
+    {
         y[i] = x[i] + y[i];
     }
 }
 
-int main() {
-    int N = 1 << 20;      // It shifts 1 to left 20 times => N = 2^20 = 1048576 (faster than using a function which computes the power)
+int main()
+{
+    int N = 1 << 20; // It shifts 1 to left 20 times => N = 2^20 = 1048576 (faster than using a function which computes the power)
 
-    // Create two arrays of ~1M elements directly on the device (GPU). 
-    // This means that nothing is stored (neither allocated) in the host main memory.
-    // !!! The GPU needs to have data on its memory, otherwise it will throw segmentation fault !!! 
+    // Create two arrays of ~1M elements in the Unified Memory. This means that both host
+    // and device can use x and y. The Unified Memory system handles memory location of elements.
+    // !!! The GPU needs to have data on its memory, otherwise it will throw segmentation fault !!!
     float *x, *y;
-    cudaMallocManaged(&x, N * sizeof(float));       // Memory is managed so that there is no need to move data
-                                                    // to host memory if it wants to access them. It is possible
-                                                    // thanks to Unified Memory System
+    cudaMallocManaged(&x, N * sizeof(float)); // Memory is managed so that there is no need to move data
+                                              // to host memory if it wants to access them. It is possible
+                                              // thanks to Unified Memory System
     cudaMallocManaged(&y, N * sizeof(float));
 
     // Inizialize x and y on the device (GPU)
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++)
+    {
         x[i] = 1.0f;
         y[i] = 2.0f;
     }
@@ -37,7 +40,8 @@ int main() {
 
     // Check maximum error in calculations (all values of y should be 1.0 + 2.0 = 3.0)
     float maxError = 0.0f;
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++)
+    {
         maxError = fmax(maxError, fabs(y[i] - 3.0f));
     }
     std::cout << "Max error: " << maxError << std::endl;
