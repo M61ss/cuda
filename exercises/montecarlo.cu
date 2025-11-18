@@ -3,17 +3,14 @@
 #include <chrono>
 
 /*
-    Demonstraits how shared memory bank conflicts lead GPU to have lower performance than CPU.
-    Prefetch improves sightly performance. 
-    Performance oscillates more on GPU than on CPU: 
-        GPU (RTX 3060): 3ms~2ms 
-        CPU (i7-10700k): 2.3ms~2.4ms
+    GPU has very lower performance than CPU.
 */
 
 __global__ void add(float *gpu_sum, float *samples)
 {
     int index = blockIdx.x * blockDim.x + threadIdx.x;
-    *gpu_sum += samples[index];
+    // *gpu_sum += samples[index];     THIS IS AN ERROR: race condition causes error
+    atomicAdd(gpu_sum, samples[index]);
 }
 
 int main(void)
