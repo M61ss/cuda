@@ -1,5 +1,11 @@
 # Shared memory
 
+Launching the kernel it exists also a third parameter which specifies the number of bytes reserved to the shared memory. The complete syntax for kernel launch parameters is:
+
+```c++
+myKernel<<<numBlocks, numThreads, sharedMemoryBytes>>>(...);
+```
+
 ## Avoid race condition
 
 When sharing data between threads, we need to be careful to avoid **race conditions**, because while threads in a block run logically in parallel, not all threads can execute physically at the same time. Let’s say that two threads A and B each load a data element from global memory and store it to shared memory. Then, thread A wants to read B’s element from shared memory, and vice versa. Let’s assume that A and B are threads in two different warps. If B has not finished writing its element before A tries to read it, we have a race condition, which can lead to undefined behavior and incorrect results.
