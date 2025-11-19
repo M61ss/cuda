@@ -14,11 +14,8 @@ void print_matrix(float **M, const int n, const int m)
 
 __global__ void create_row(float *row)
 {
-}
-
-__global__ void create(float **A)
-{
     int index = blockIdx.x * blockDim.x + threadIdx.x;
+    row[index] = 2.0f;
 }
 
 int main(void)
@@ -40,8 +37,15 @@ int main(void)
     cudaMemPrefetchAsync(A, N * sizeof(float *), loc, 0);
     cudaMemPrefetchAsync(B, N * sizeof(float *), loc, 0);
 
+    int numT = 256;
+    int numB = (N + numT - 1) / numT;
+    for (int i = 0; i < N; i++) {
+        create_row<<<numB, numT>>>(A[i]);
+    }
+    cudaDeviceSynchronize();
+
     print_matrix(A, N, N);
-    print_matrix(B, N, N);
+    // print_matrix(B, N, N);
 
     for (int i = 0; i < N; i++)
     {
