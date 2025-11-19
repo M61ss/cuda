@@ -1,3 +1,7 @@
+# Learning material
+
+Inside folders there is a README and there are some notes written in code comments. Detailed information are avaiable at the NVIDIA official documentation site "[NVIDIA CUDA C Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#programming-model)".
+
 # Run programs
 
 ## Windows + VSCode
