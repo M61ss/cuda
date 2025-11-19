@@ -36,6 +36,7 @@ int main(void)
     }
     cudaMemPrefetchAsync(A, N * sizeof(float *), loc, 0);
     cudaMemPrefetchAsync(B, N * sizeof(float *), loc, 0);
+    std::cout << "Memory allocation and prefetching terminated" << std::endl;
 
     int numT = 256;
     int numB = (N + numT - 1) / numT;
@@ -43,6 +44,7 @@ int main(void)
         create_row<<<numB, numT>>>(A[i]);
     }
     cudaDeviceSynchronize();
+    std::cout << "Matrices creation terminated" << std::endl;
 
     print_matrix(A, N, N);
     // print_matrix(B, N, N);
