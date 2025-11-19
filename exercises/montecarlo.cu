@@ -3,13 +3,15 @@
 #include <chrono>
 
 /*
-    GPU has very lower performance than CPU.
+    Demonstraits that GPU has very lower performance than 
+    CPU when the GPU access the same variable from different threads.
 */
 
 __global__ void add(float *gpu_sum, float *samples)
 {
     int index = blockIdx.x * blockDim.x + threadIdx.x;
-    // *gpu_sum += samples[index];     THIS IS AN ERROR: race condition causes error
+    // *gpu_sum += samples[index];      THIS IS AN ERROR: race condition causes kernel 
+    //                                  error before to store the sum result in gpu_sum
     atomicAdd(gpu_sum, samples[index]);
 }
 
