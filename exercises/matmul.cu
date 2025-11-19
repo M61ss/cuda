@@ -20,7 +20,7 @@ __global__ void create_row(float *row)
 
 int main(void)
 {
-    const int N = 1 << 20;
+    const int N = 1 << 5;
     float **A, **B;
     cudaMallocManaged(&A, N * sizeof(float *));
     cudaMallocManaged(&B, N * sizeof(float *));
