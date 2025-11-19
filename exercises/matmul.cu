@@ -40,6 +40,9 @@ int main(void)
     cudaMemPrefetchAsync(A, N * sizeof(float *), loc, 0);
     cudaMemPrefetchAsync(B, N * sizeof(float *), loc, 0);
 
+    print_matrix(A, N, N);
+    print_matrix(B, N, N);
+
     for (int i = 0; i < N; i++)
     {
         cudaFree(A[i]);
