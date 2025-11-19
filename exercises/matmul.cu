@@ -1,5 +1,17 @@
 #include <iostream>
 
+void print_matrix(float **M, const int n, const int m)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            std::cout << M[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 __global__ void create_row(float *row)
 {
 }
@@ -27,14 +39,6 @@ int main(void)
     }
     cudaMemPrefetchAsync(A, N * sizeof(float *), loc, 0);
     cudaMemPrefetchAsync(B, N * sizeof(float *), loc, 0);
-
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            
-        }
-    }
 
     for (int i = 0; i < N; i++)
     {
