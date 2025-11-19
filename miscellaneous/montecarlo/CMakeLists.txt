@@ -5,8 +5,4 @@ endif()
 
 project(montecarlo LANGUAGES CXX CUDA)
 
-add_executable(montecarlo)
-target_sources(montecarlo
-    PRIVATE
-        montecarlo.cu
-)
+add_executable(montecarlo montecarlo.cu)

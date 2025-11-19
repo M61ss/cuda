@@ -5,8 +5,4 @@ endif()
 
 project(matmul LANGUAGES CXX CUDA)
 
-add_executable(matmul)
-target_sources(matmul
-    PRIVATE
-        matmul.cu
-)
+add_executable(matmul matmul.cu)
