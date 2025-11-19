@@ -2,7 +2,6 @@
 
 __global__ void create_row(float *row)
 {
-    
 }
 
 __global__ void create(float **A)
@@ -29,5 +28,20 @@ int main(void)
     cudaMemPrefetchAsync(A, N * sizeof(float *), loc, 0);
     cudaMemPrefetchAsync(B, N * sizeof(float *), loc, 0);
 
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            
+        }
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        cudaFree(A[i]);
+        cudaFree(B[i]);
+    }
+    cudaFree(A);
+    cudaFree(B);
     return 0;
 }
