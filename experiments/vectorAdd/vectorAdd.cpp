@@ -39,6 +39,5 @@ int main(void)
     free(u);
     free(result);
     free(label);
-
     exit(EXIT_SUCCESS);
 }
