@@ -22,16 +22,18 @@ __global__ void vectorAdd(float *v1, float *v2, float *result)
 int main(void)
 {
     const int N = 1 << 20;
-    auto clock = std::chrono::high_resolution_clock();
-    auto init = clock.now();
+    // auto clock = std::chrono::high_resolution_clock();       It causes warning "variable never used" because nvcc doesn't understand 
+    //                                                          completly C++ type creation (nvcc has many limitations in C++ frontend,
+    //                                                          so avoid fancy implementations)
+    auto init = std::chrono::high_resolution_clock::now();
 
-    auto begin = clock.now();
+    auto begin = std::chrono::high_resolution_clock::now();
     float *v, *u, *label, *result;
     cudaMallocManaged(&v, N * sizeof(float));
     cudaMallocManaged(&u, N * sizeof(float));
     cudaMallocManaged(&label, N * sizeof(float));
     cudaMallocManaged(&result, N * sizeof(float));
-    auto end = clock.now();
+    auto end = std::chrono::high_resolution_clock::now();
     computeElapsedTime(begin, end, "Unified Memory allocation time");
 
     cudaMemLocation loc;
@@ -43,20 +45,20 @@ int main(void)
     int numThreads = 256;
     int numBlocks = (N + numThreads - 1) / numThreads;
 
-    begin = clock.now();
+    begin = std::chrono::high_resolution_clock::now();
     vectorInit<<<numBlocks, numThreads>>>(v, 1.0f);
     cudaDeviceSynchronize();
     vectorInit<<<numBlocks, numThreads>>>(u, 2.0f);
     cudaDeviceSynchronize();
     vectorInit<<<numBlocks, numThreads>>>(label, 3.0f);
     cudaDeviceSynchronize();
-    end = clock.now();
+    end = std::chrono::high_resolution_clock::now();
     computeElapsedTime(begin, end, "Vector initialization time");
 
-    begin = clock.now();
+    begin = std::chrono::high_resolution_clock::now();
     vectorAdd<<<numBlocks, numThreads>>>(v, u, result);
     cudaDeviceSynchronize();
-    end = clock.now();
+    end = std::chrono::high_resolution_clock::now();
     computeElapsedTime(begin, end, "Vector sum time");
 
     float maxError = 0;
@@ -70,7 +72,7 @@ int main(void)
     cudaFree(result);
     cudaFree(label);
 
-    end = clock.now();
+    end = std::chrono::high_resolution_clock::now();
     computeElapsedTime(init, end, "Total running time");
 
     exit(EXIT_SUCCESS);
