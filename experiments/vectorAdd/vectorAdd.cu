@@ -48,9 +48,7 @@ int main(void)
 
     begin = std::chrono::high_resolution_clock::now();
     vectorInit<<<numBlocks, numThreads>>>(v, 1.0f);
-    cudaDeviceSynchronize();
     vectorInit<<<numBlocks, numThreads>>>(u, 2.0f);
-    cudaDeviceSynchronize();
     vectorInit<<<numBlocks, numThreads>>>(label, 3.0f);
     cudaDeviceSynchronize();
     end = std::chrono::high_resolution_clock::now();
