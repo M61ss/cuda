@@ -40,5 +40,5 @@ int main(void)
     free(x);
     free(y);
 
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
