@@ -1,10 +1,11 @@
 #include <iostream>
 #include <chrono>
 
-void computeElapsedTime(std::chrono::_V2::system_clock::time_point begin, std::chrono::_V2::system_clock::time_point end, std::string msg)
+void computeElapsedTime(std::chrono::_V2::system_clock::time_point begin, std::chrono::_V2::system_clock::time_point end, std::string msg, float *total_time)
 {
     auto elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000;
     std::cout << msg << ": " << elapsed << "ms" << std::endl;
+    *total_time += elapsed;
 }
 
 __global__ void vectorInit(float *v, float value)
@@ -25,7 +26,7 @@ int main(void)
     // auto clock = std::chrono::high_resolution_clock();       It causes warning "variable never used" because nvcc doesn't understand 
     //                                                          completly C++ type creation (nvcc has many limitations in C++ frontend,
     //                                                          so avoid fancy implementations)
-    auto init = std::chrono::high_resolution_clock::now();
+    float total_time = 0.0f;
 
     auto begin = std::chrono::high_resolution_clock::now();
     float *v, *u, *label, *result;
@@ -34,7 +35,7 @@ int main(void)
     cudaMallocManaged(&label, N * sizeof(float));
     cudaMallocManaged(&result, N * sizeof(float));
     auto end = std::chrono::high_resolution_clock::now();
-    computeElapsedTime(begin, end, "Unified Memory allocation time");
+    computeElapsedTime(begin, end, "Unified Memory allocation time", &total_time);
 
     cudaMemLocation loc;
     loc.id = 0;
@@ -53,13 +54,13 @@ int main(void)
     vectorInit<<<numBlocks, numThreads>>>(label, 3.0f);
     cudaDeviceSynchronize();
     end = std::chrono::high_resolution_clock::now();
-    computeElapsedTime(begin, end, "Vector initialization time");
+    computeElapsedTime(begin, end, "Vector initialization time", &total_time);
 
     begin = std::chrono::high_resolution_clock::now();
     vectorAdd<<<numBlocks, numThreads>>>(v, u, result);
     cudaDeviceSynchronize();
     end = std::chrono::high_resolution_clock::now();
-    computeElapsedTime(begin, end, "Vector sum time");
+    computeElapsedTime(begin, end, "Vector sum time", &total_time);
 
     float maxError = 0;
     for (int i = 0; i < N; i++) {
@@ -67,13 +68,11 @@ int main(void)
     }
     std::cout << "Maximum detected error: " << maxError << std::endl;
 
+    std::cout << "Total elapsed time: " << total_time << "ms" << std::endl;
+
     cudaFree(v);
     cudaFree(u);
     cudaFree(result);
     cudaFree(label);
-
-    end = std::chrono::high_resolution_clock::now();
-    computeElapsedTime(init, end, "Total running time");
-
     exit(EXIT_SUCCESS);
 }
