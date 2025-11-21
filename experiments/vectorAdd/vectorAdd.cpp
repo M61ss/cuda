@@ -2,6 +2,12 @@
 #include <math.h>
 #include <chrono>
 
+void computeElapsedTime(std::chrono::_V2::system_clock::time_point begin, std::chrono::_V2::system_clock::time_point end, std::string msg)
+{
+    auto elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000;
+    std::cout << msg << ": " << elapsed << "ms" << std::endl;
+}
+
 void vectorAdd(float *v, float *u, float *res, const int N)
 {
     for (int i = 0; i < N; i++)
@@ -24,9 +30,7 @@ int main(void)
     float *label = (float *)malloc(N * sizeof(float));
     float *result = (float *)malloc(N * sizeof(float));
     auto end = clock.now();
-
-    auto elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000;
-    std::cout << "Memory allocation took: " << elapsed << "ms" << std::endl;
+    computeElapsedTime(begin, end, "Memory allocation time");
 
     begin = clock.now();
     for (int i = 0; i < N; i++)
@@ -36,16 +40,12 @@ int main(void)
         label[i] = 2.0f;
     }
     end = clock.now();
-
-    elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000;
-    std::cout << "Vector initialization took: " << elapsed << "ms" << std::endl;
+    computeElapsedTime(begin, end, "Vector initialization time");
 
     begin = clock.now();
     vectorAdd(v, u, result, N);
     end = clock.now();
-
-    elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000;
-    std::cout << "Vector add took: " << elapsed << "ms" << std::endl;
+    computeElapsedTime(begin, clock.now(), "Vector sum time");
 
     float maxError = 0;
     for (int i = 0; i < N; i++)
@@ -59,8 +59,8 @@ int main(void)
     free(result);
     free(label);
 
-    auto total_exec_time = (float)std::chrono::duration_cast<std::chrono::microseconds>(clock.now() - init).count() / 1000;
-    std::cout << "Total running time: " << total_exec_time  << "ms" << std::endl;
+    end = clock.now();
+    computeElapsedTime(init, end, "Total running time");
 
     exit(EXIT_SUCCESS);
 }
