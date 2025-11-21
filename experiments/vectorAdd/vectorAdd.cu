@@ -7,14 +7,15 @@ __global__ void vectorInit(float *v, float value, const int length)
 int main(void)
 {
     const int N = 1 << 20;
-    float *v = (float *)malloc(N * sizeof(float));
-    float *u = (float *)malloc(N * sizeof(float));
-    float *result = (float *)malloc(N * sizeof(float));
-    float *label = (float *)malloc(N * sizeof(float));
+    float *v, *u, *label, *result;
+    cudaMallocManaged(&v, N * sizeof(float));
+    cudaMallocManaged(&u, N * sizeof(float));
+    cudaMallocManaged(&label, N * sizeof(float));
+    cudaMallocManaged(&result, N * sizeof(float));
 
-    free(v);
-    free(u);
-    free(result);
-    free(label);
+    cudaFree(v);
+    cudaFree(u);
+    cudaFree(result);
+    cudaFree(label);
     exit(EXIT_SUCCESS);
 }
