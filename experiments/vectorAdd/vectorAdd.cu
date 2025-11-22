@@ -13,6 +13,8 @@ __global__ void vectorInit(float *v, float value, const int length)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
+    // This check is necessary because not all vector are power of 2 long.
+    // In general, often the number of threads doesn't correspond to the vector length 
     if (i < length)
         v[i] = value;
 }
