@@ -30,6 +30,7 @@ __global__ void vectorAdd(float *v1, float *v2, float *result, const int vector_
 int main(void)
 {
     const int vector_length = 1 << 20;
+    const int vector_size = vector_length * sizeof(float);
     
     cudaError_t error = cudaSuccess;
     
@@ -44,28 +45,28 @@ int main(void)
 
     float *v, *u, *label, *result;
 
-    cudaMallocManaged(&v, vector_length * sizeof(float));
+    cudaMallocManaged(&v, vector_size);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'v' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&u, vector_length * sizeof(float));
+    cudaMallocManaged(&u, vector_size);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'u' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&label, vector_length * sizeof(float));
+    cudaMallocManaged(&label, vector_size);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'label' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&result, vector_length * sizeof(float));
+    cudaMallocManaged(&result, vector_size);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'result' on Unified Memory. Code %s", cudaGetErrorString(error));
@@ -81,28 +82,28 @@ int main(void)
     loc.id = 0;
     loc.type = cudaMemLocationTypeDevice;
 
-    cudaMemPrefetchAsync(v, vector_length * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(v, vector_size, loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'v' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }        
 
-    cudaMemPrefetchAsync(u, vector_length * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(u, vector_size, loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'u' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
     
-    cudaMemPrefetchAsync(label, vector_length * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(label, vector_size, loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'label' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     } 
 
-    cudaMemPrefetchAsync(result, vector_length * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(result, vector_size, loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'result' on device. Code %s", cudaGetErrorString(error));
