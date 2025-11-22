@@ -84,7 +84,14 @@ int main(void)
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'u' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
-    }      
+    }
+    
+    cudaMemPrefetchAsync(label, N * sizeof(float), loc, 0);
+
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to prefetch vector 'label' on device. Code %s", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    } 
 
     cudaMemPrefetchAsync(result, N * sizeof(float), loc, 0);
 
