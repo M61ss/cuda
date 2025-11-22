@@ -30,14 +30,16 @@ __global__ void vectorAdd(float *v1, float *v2, float *result, const int length)
 int main(void)
 {
     const int N = 1 << 20;
-    // auto clock = std::chrono::high_resolution_clock();       It causes warning "variable never used" because nvcc doesn't understand 
-    //                                                          completly C++ type creation (nvcc has many limitations in C++ frontend,
-    //                                                          so avoid fancy implementations)
+    
     cudaError_t error = cudaSuccess;
     
     float total_time = 0.0f;
 
     // MEMORY ALLOCATION
+
+    // auto clock = std::chrono::high_resolution_clock();       It causes warning "variable never used" because nvcc doesn't understand 
+    //                                                          completly C++ type creation (nvcc has many limitations in C++ frontend,
+    //                                                          so avoid fancy implementations)
     auto begin = std::chrono::high_resolution_clock::now();
 
     float *v, *u, *label, *result;
@@ -74,6 +76,7 @@ int main(void)
     computeElapsedTime(begin, end, "Unified Memory allocation time", &total_time);
 
     // MEMORY PREFETCH
+
     cudaMemLocation loc;
     loc.id = 0;
     loc.type = cudaMemLocationTypeDevice;
@@ -107,6 +110,7 @@ int main(void)
     }  
 
     // VECTOR INITIALIZATION
+
     int numThreads = 256;
     int numBlocks = (N + numThreads - 1) / numThreads;
 
@@ -144,6 +148,7 @@ int main(void)
     computeElapsedTime(begin, end, "Vector initialization time", &total_time);
 
     // VECTOR SUM
+
     begin = std::chrono::high_resolution_clock::now();
 
     vectorAdd<<<numBlocks, numThreads>>>(v, u, result, N);
@@ -164,6 +169,7 @@ int main(void)
     computeElapsedTime(begin, end, "Vector sum time", &total_time);
 
     // COMPUTE NUMERICAL ERROR
+
     float maxError = 0;
 
     for (int i = 0; i < N; i++) {
@@ -174,6 +180,7 @@ int main(void)
     std::cout << "Total elapsed time: " << total_time << "ms" << std::endl;
 
     // FREE MEMORY
+    
     cudaFree(v);
 
     if (error != cudaSuccess) {
