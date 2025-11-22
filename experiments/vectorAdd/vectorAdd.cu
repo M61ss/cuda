@@ -9,27 +9,27 @@ void computeElapsedTime(std::chrono::_V2::system_clock::time_point begin, std::c
     *total_time += elapsed;
 }
 
-__global__ void vectorInit(float *v, float value, const int length)
+__global__ void vectorInit(float *v, float value, const int vector_length)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     // This check is necessary to avoid segmentation fault because not all vector are power of 2 long.
     // In general, often the number of threads doesn't correspond to the vector length 
-    if (i < length)
+    if (i < vector_length)
         v[i] = value;
 }
 
-__global__ void vectorAdd(float *v1, float *v2, float *result, const int length)
+__global__ void vectorAdd(float *v1, float *v2, float *result, const int vector_length)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (i < length)
+    if (i < vector_length)
         result[i] = v1[i] + v2[i];
 }
 
 int main(void)
 {
-    const int N = 1 << 20;
+    const int vector_length = 1 << 20;
     
     cudaError_t error = cudaSuccess;
     
@@ -44,28 +44,28 @@ int main(void)
 
     float *v, *u, *label, *result;
 
-    cudaMallocManaged(&v, N * sizeof(float));
+    cudaMallocManaged(&v, vector_length * sizeof(float));
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'v' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&u, N * sizeof(float));
+    cudaMallocManaged(&u, vector_length * sizeof(float));
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'u' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&label, N * sizeof(float));
+    cudaMallocManaged(&label, vector_length * sizeof(float));
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'label' on Unified Memory. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    cudaMallocManaged(&result, N * sizeof(float));
+    cudaMallocManaged(&result, vector_length * sizeof(float));
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate vector 'result' on Unified Memory. Code %s", cudaGetErrorString(error));
@@ -81,28 +81,28 @@ int main(void)
     loc.id = 0;
     loc.type = cudaMemLocationTypeDevice;
 
-    cudaMemPrefetchAsync(v, N * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(v, vector_length * sizeof(float), loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'v' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }        
 
-    cudaMemPrefetchAsync(u, N * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(u, vector_length * sizeof(float), loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'u' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
     
-    cudaMemPrefetchAsync(label, N * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(label, vector_length * sizeof(float), loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'label' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     } 
 
-    cudaMemPrefetchAsync(result, N * sizeof(float), loc, 0);
+    cudaMemPrefetchAsync(result, vector_length * sizeof(float), loc, 0);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to prefetch vector 'result' on device. Code %s", cudaGetErrorString(error));
@@ -112,25 +112,25 @@ int main(void)
     // VECTOR INITIALIZATION
 
     int numThreads = 256;
-    int numBlocks = (N + numThreads - 1) / numThreads;
+    int numBlocks = (vector_length + numThreads - 1) / numThreads;
 
     begin = std::chrono::high_resolution_clock::now();
 
-    vectorInit<<<numBlocks, numThreads>>>(v, 1.0f, N);
+    vectorInit<<<numBlocks, numThreads>>>(v, 1.0f, vector_length);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to initialize vector 'v' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    vectorInit<<<numBlocks, numThreads>>>(u, 2.0f, N);
+    vectorInit<<<numBlocks, numThreads>>>(u, 2.0f, vector_length);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to initialize vector 'u' on device. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
-    vectorInit<<<numBlocks, numThreads>>>(label, 3.0f, N);
+    vectorInit<<<numBlocks, numThreads>>>(label, 3.0f, vector_length);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to initialize vector 'label' on device. Code %s", cudaGetErrorString(error));
@@ -151,7 +151,7 @@ int main(void)
 
     begin = std::chrono::high_resolution_clock::now();
 
-    vectorAdd<<<numBlocks, numThreads>>>(v, u, result, N);
+    vectorAdd<<<numBlocks, numThreads>>>(v, u, result, vector_length);
 
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to compute v+u on device. Code %s", cudaGetErrorString(error));
@@ -172,7 +172,7 @@ int main(void)
 
     float maxError = 0;
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < vector_length; i++) {
         maxError = fmaxf(0, fabsf(result[i] - label[i]));
     }
     std::cout << "Maximum detected error: " << maxError << std::endl;
@@ -180,7 +180,7 @@ int main(void)
     std::cout << "Total elapsed time: " << total_time << "ms" << std::endl;
 
     // FREE MEMORY
-    
+
     cudaFree(v);
 
     if (error != cudaSuccess) {
