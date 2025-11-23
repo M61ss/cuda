@@ -9,9 +9,9 @@ void computeElapsedTime(std::chrono::_V2::system_clock::time_point begin, std::c
     *total_time += elapsed;
 }
 
-void vectorAdd(float *v, float *u, float *res, const int N)
+void vectorAdd(float *v, float *u, float *res, const int vector_length)
 {
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < vector_length; i++)
     {
         res[i] = v[i] + u[i];
     }
@@ -19,22 +19,25 @@ void vectorAdd(float *v, float *u, float *res, const int N)
 
 int main(void)
 {
-    const int N = 1 << 20;
-    // float v[N], u[N], y[N], x[N];    ERROR: Setting N too high causes stack overflow creating arrays
-    //                                         (the stack is 1MB), so I am using vectors
+    const int vector_length = 1 << 20;
+    // float v[vector_length], u[vector_length], y[vector_length], x[vector_length];    
+    //                 ERROR: Setting vector_length too high causes stack overflow creating arrays
+    //                        (the stack is 1MB), so I am using vectors
+    const int vector_size = vector_length * sizeof(float);
+
     auto clock = std::chrono::high_resolution_clock();
     float total_time = 0.0f;
 
     auto begin = clock.now();
-    float *v = (float *)malloc(N * sizeof(float));
-    float *u = (float *)malloc(N * sizeof(float));
-    float *label = (float *)malloc(N * sizeof(float));
-    float *result = (float *)malloc(N * sizeof(float));
+    float *v = (float *)malloc(vector_size);
+    float *u = (float *)malloc(vector_size);
+    float *label = (float *)malloc(vector_size);
+    float *result = (float *)malloc(vector_size);
     auto end = clock.now();
     computeElapsedTime(begin, end, "Memory allocation time", &total_time);
 
     begin = clock.now();
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < vector_length; i++)
     {
         v[i] = 1.0f;
         u[i] = 1.0f;
@@ -44,12 +47,12 @@ int main(void)
     computeElapsedTime(begin, end, "Vector initialization time", &total_time);
 
     begin = clock.now();
-    vectorAdd(v, u, result, N);
+    vectorAdd(v, u, result, vector_length);
     end = clock.now();
     computeElapsedTime(begin, clock.now(), "Vector sum time", &total_time);
 
     float maxError = 0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < vector_length; i++)
     {
         maxError = fmaxf(0, fabsf(result[i] - label[i]));
     }
