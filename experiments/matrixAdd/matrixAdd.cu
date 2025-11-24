@@ -12,6 +12,8 @@ int main(void)
 
     cudaError_t error = cudaSuccess;
 
+    // MEMORY ALLOCATION AND PREFETCH
+
     cudaMemLocation loc;
     loc.id = 0;
     loc.type = cudaMemLocationTypeDevice;
@@ -103,7 +105,11 @@ int main(void)
         }
     }
 
+    // MATRIX INITIALIZATION
 
+    
+
+    // FREE MEMROY
 
     for (int i = 0; i < num_rows; i++)
     {
