@@ -11,6 +11,8 @@ __global__ void matrixAdd(float **A, float **B, float **C, const int num_rows, c
 
 int main(void)
 {
+    // PARAMETERS
+
     const int num_rows = 1 << 10;
     const int num_cols = 1 << 5;
 
@@ -18,6 +20,7 @@ int main(void)
     const int row_size = num_cols * sizeof(float);
 
     float **A, **B, **C;
+    float label = 3.0f;
 
     dim3 numThreads(16, 16);
     dim3 numBlocks(num_rows / numThreads.x, num_cols / numThreads.y);
@@ -131,15 +134,30 @@ int main(void)
 
     // MATRIX INITIALIZATION
 
-    
 
+    
     // MATRIX SUM
 
     matrixAdd<<<numBlocks, numThreads>>>(A, B, C, num_rows, num_cols);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to perform C=A+B. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
+    }
+
+    // ERROR DETECTION
+
+    for (int i = 0; i < num_rows; i++)
+    {
+        for (int j = 0; j < num_cols; j++)
+        {
+            if (fabsf(C[i][j] - label) > 1e-6)
+            {
+                fprintf(stderr, "Numerical error too large detected at '(%d,%d)'", i, j);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 
     // FREE MEMROY
