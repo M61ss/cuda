@@ -135,7 +135,7 @@ int main(void)
     // MATRIX INITIALIZATION
 
 
-    
+
     // MATRIX SUM
 
     matrixAdd<<<numBlocks, numThreads>>>(A, B, C, num_rows, num_cols);
@@ -152,7 +152,7 @@ int main(void)
     {
         for (int j = 0; j < num_cols; j++)
         {
-            if (fabsf(C[i][j] - label) > 1e-6)
+            if (fabsf((C[i][j] - label) / label) > 2e-31)
             {
                 fprintf(stderr, "Numerical error too large detected at '(%d,%d)'", i, j);
                 exit(EXIT_FAILURE);
