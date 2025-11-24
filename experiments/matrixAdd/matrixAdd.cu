@@ -131,6 +131,13 @@ int main(void)
     dim3 numThreads(16, 16);
     dim3 numBlocks(num_rows / numThreads.x, num_cols / numThreads.y);
 
+    matrixAdd<<<numBlocks, numThreads>>>(A, B, C, num_rows, num_cols);
+
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to perform C=A+B. Code %s", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+
     // FREE MEMROY
 
     for (int i = 0; i < num_rows; i++)
