@@ -9,6 +9,14 @@ __global__ void matrixAdd(float **A, float **B, float **C, const int num_rows, c
         C[i][j] = A[i][j] + B[i][j];
 }
 
+__global__ void matrixInit(float **M, const float value, const int num_rows, const int num_cols) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < num_rows && j < num_cols)
+        M[i][j] = value;
+}
+
 int main(void)
 {
     // PARAMETERS
