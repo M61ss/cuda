@@ -142,7 +142,21 @@ int main(void)
 
     // MATRIX INITIALIZATION
 
+    matrixInit<<<numBlocks, numThreads>>>(A, 1.0f, num_rows, num_cols);
 
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "Failed to initialize matrix 'A'. Code %s", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+
+    matrixInit<<<numBlocks, numThreads>>>(B, 2.0f, num_rows, num_cols);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "Failed to initialize matrix 'B'. Code %s", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 
     // MATRIX SUM
 
