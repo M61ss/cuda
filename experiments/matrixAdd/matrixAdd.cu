@@ -19,6 +19,9 @@ int main(void)
 
     float **A, **B, **C;
 
+    dim3 numThreads(16, 16);
+    dim3 numBlocks(num_rows / numThreads.x, num_cols / numThreads.y);
+
     cudaError_t error = cudaSuccess;
 
     // MEMORY ALLOCATION AND PREFETCH
@@ -128,8 +131,9 @@ int main(void)
 
     // MATRIX INITIALIZATION
 
-    dim3 numThreads(16, 16);
-    dim3 numBlocks(num_rows / numThreads.x, num_cols / numThreads.y);
+    
+
+    // MATRIX SUM
 
     matrixAdd<<<numBlocks, numThreads>>>(A, B, C, num_rows, num_cols);
 
