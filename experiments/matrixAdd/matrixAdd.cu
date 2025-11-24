@@ -107,7 +107,8 @@ int main(void)
 
     // MATRIX INITIALIZATION
 
-    
+    dim3 numThreads(16, 16);
+    dim3 numBlocks(num_rows / numThreads.x, num_cols / numThreads.y);
 
     // FREE MEMROY
 
