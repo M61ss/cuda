@@ -1,5 +1,14 @@
 #include <iostream>
 
+__global__ void matrixAdd(float **A, float **B, float **C, const int num_rows, const int num_cols)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < num_rows && j < num_cols)
+        C[i][j] = A[i][j] + B[i][j];
+}
+
 int main(void)
 {
     const int num_rows = 1 << 10;
@@ -20,42 +29,48 @@ int main(void)
 
     cudaMallocManaged(&A, col_size);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to allocate Unified Memory for matrix 'A' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaMemPrefetchAsync(A, col_size, loc, 0);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to prefetch to device matrix 'A' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaMallocManaged(&B, col_size);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to allocate Unified Memory for matrix 'B' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaMemPrefetchAsync(B, col_size, loc, 0);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to prefetch to device matrix 'B' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaMallocManaged(&C, col_size);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to allocate Unified Memory for matrix 'C' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaMemPrefetchAsync(C, col_size, loc, 0);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to prefetch to device matrix 'C' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
@@ -64,42 +79,48 @@ int main(void)
     {
         cudaMallocManaged(&A[i], row_size);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to allocate Unified Memory for matrix 'A' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaMemPrefetchAsync(A[i], row_size, loc, 0);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to prefetch to device matrix 'A' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaMallocManaged(&B[i], row_size);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to allocate Unified Memory for matrix 'B' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaMemPrefetchAsync(B[i], row_size, loc, 0);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to prefetch to device matrix 'B' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaMallocManaged(&C[i], row_size);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to allocate Unified Memory for matrix 'C' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaMemPrefetchAsync(C[i], row_size, loc, 0);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to prefetch to device matrix 'C' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
@@ -116,21 +137,24 @@ int main(void)
     {
         cudaFree(A[i]);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to free matrix 'A' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaFree(B[i]);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to free matrix 'B' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         cudaFree(C[i]);
 
-        if (error != cudaSuccess) {
+        if (error != cudaSuccess)
+        {
             fprintf(stderr, "Failed to free matrix 'C' cols for row '%d'. Code %s", i, cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
@@ -138,21 +162,24 @@ int main(void)
 
     cudaFree(A);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to free matrix 'A' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaFree(B);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to free matrix 'B' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
     cudaFree(C);
 
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess)
+    {
         fprintf(stderr, "Failed to free matrix 'C' rows. Code %s", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
