@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    const int num_rows = 1 << 20;
+    const int num_rows = 1 << 12;
     const int num_cols = 1 << 10;
     const int col_size = num_rows * sizeof(float *);
     const int row_size = num_cols * sizeof(float);
@@ -40,6 +40,7 @@ int main(void)
             }
         }
     }
+    fprintf(stdout, "Matrix sum success\n");
 
     for (int i = 0; i < num_rows; i++) {
         free(A[i]);
