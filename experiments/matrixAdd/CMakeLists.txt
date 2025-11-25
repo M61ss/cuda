@@ -6,4 +6,5 @@ find_package(CUDAToolkit REQUIRED)
 
 set(CMAKE_CUDA_ARCHITECTURES 75 80 86 87 89 90 100 110 120)
 
-add_executable(matrixAdd matrixAdd.cu)
+add_executable(matrixAddGPU matrixAdd.cu)
+add_executable(matrixAddCPU matrixAdd.cpp)
